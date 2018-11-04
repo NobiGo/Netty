@@ -67,7 +67,7 @@ class HandleAccept implements Runnable {
         try {
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             printWriter = new PrintWriter(socket.getOutputStream(),true);
-            System.out.println("客户端处理进程");
+            System.out.println("客户端的IP为：" + socket.getInetAddress().toString());
             String currentTime = null;
             String body = null;
             while (true) {

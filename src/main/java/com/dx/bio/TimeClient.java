@@ -13,7 +13,7 @@ import java.net.Socket;
 public class TimeClient {
     public static void main(String[] args) {
         // 制定需要进行连接的端口号
-        int port = 8080;
+        int port = 8000;
         if(args!=null&&args.length!=0){
             try{
                 port = Integer.valueOf(args[0]);
