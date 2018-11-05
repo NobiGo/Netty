@@ -19,7 +19,7 @@ public class TimeClient {
                 port = Integer.valueOf(args[0]);
             }catch (NumberFormatException numberException){
                 numberException.printStackTrace();
-                System.out.println("采用默认值：8080");
+                System.out.println("采用默认值：8000");
             }
         }
         Socket socket = null;
