@@ -1,4 +1,4 @@
-package com.dx.nio;
+package com.dx.TimeServer.nio;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -22,6 +22,7 @@ public class MultiplexerTimeServer implements Runnable {
 
     public MultiplexerTimeServer(int port) {
         try {
+            // 创建多路复用器
             selector = Selector.open();
             // 打开ServerSocketChannel，用于监听客户端的连接，是所有客户端连接的父管道
             serverSocketChannel = ServerSocketChannel.open();
@@ -129,5 +130,4 @@ public class MultiplexerTimeServer implements Runnable {
         }
 
     }
-
 }
