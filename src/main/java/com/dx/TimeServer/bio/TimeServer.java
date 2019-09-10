@@ -24,11 +24,13 @@ public class TimeServer {
             }
 
         }
+        // 创建一个新的ServerSocket，用以监听指定端口上的连接请求
         ServerSocket serverSocket = null;
         try {
             serverSocket = new ServerSocket(port);
             System.out.println("The time server is start in port:" + port);
             while (true) {
+                // 对accept方法的调用将被阻塞，直到一个连接的建立
                 Socket socket = serverSocket.accept();
                 new Thread(new HandleAccept(socket)).start();
             }
@@ -60,13 +62,13 @@ class HandleAccept implements Runnable {
         this.socket = socket;
     }
 
-    @Override
     public void run() {
         BufferedReader bufferedReader = null;
         PrintWriter printWriter = null;
         try {
+            // 获取套接字的流对象
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            printWriter = new PrintWriter(socket.getOutputStream(),true);
+            printWriter = new PrintWriter(socket.getOutputStream(), true);
             System.out.println("客户端的IP为：" + socket.getInetAddress().toString());
             String currentTime = null;
             String body = null;
@@ -78,6 +80,7 @@ class HandleAccept implements Runnable {
                 }
                 System.out.println("The time server receive order:" + body);
                 currentTime = "QUERY TIME ORDER".equalsIgnoreCase(body) ? new Date(System.currentTimeMillis()).toString() : "Bad Order";
+                // 服务器的响应发送给客户端
                 printWriter.println(currentTime);
             }
         } catch (IOException ioException) {

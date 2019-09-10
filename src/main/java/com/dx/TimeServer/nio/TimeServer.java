@@ -14,7 +14,6 @@ public class TimeServer {
                 System.out.println("采用默认端口：" + port);
             }
         }
-
         MultiplexerTimeServer multiplexerTimeServer = new MultiplexerTimeServer(port);
         new Thread(multiplexerTimeServer, "NIO-MultiplexerTimeServer-001").start();
     }

@@ -1,4 +1,4 @@
-package com.dx.TimeServer.netty;
+package com.dx.TcpTimeServer.tcpnetty;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -7,6 +7,8 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LineBasedFrameDecoder;
+import io.netty.handler.codec.string.StringDecoder;
 
 import java.util.logging.Logger;
 
@@ -32,6 +34,8 @@ public class TimeClient {
                 @Override
                 protected void initChannel(SocketChannel socketChannel) throws Exception {
                     // 将ChannelHandler设置到ChannelPipeline中，用于处理网络I/O事件
+                    socketChannel.pipeline().addLast(new LineBasedFrameDecoder(1024));
+                    socketChannel.pipeline().addLast(new StringDecoder());
                     socketChannel.pipeline().addLast(new TimeClientHandler());
                 }
             });
@@ -47,28 +51,30 @@ public class TimeClient {
 
     private class TimeClientHandler extends ChannelHandlerAdapter {
         private final Logger LOGGER = Logger.getLogger(TimeClientHandler.class.getName());
-        private final ByteBuf firstMessage;
+        private ByteBuf firstMessage;
+        private byte[] req;
+        private int counter;
 
         public TimeClientHandler() {
-            byte[] req = "QUERY TIME ORDER".getBytes();
-            firstMessage = Unpooled.buffer(req.length);
-            firstMessage.writeBytes(req);
+            req = ("QUERY TIME ORDER" + System.getProperty("line.separator")).getBytes();
         }
 
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
             // 将请求消息发送给服务端
-            ctx.writeAndFlush(firstMessage);
+            for (int i = 0; i < 100; i++) {
+                firstMessage = Unpooled.buffer(req.length);
+                firstMessage.writeBytes(req);
+                // 每写入一次就刷新一次
+                ctx.writeAndFlush(firstMessage);
+            }
         }
 
-        // 对于每个传入的消息都需要调用
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-            ByteBuf buf = (ByteBuf) msg;
-            byte[] req = new byte[buf.readableBytes()];
-            buf.readBytes(req);
-            String body = new String(req, "UTF-8");
-            System.out.println("Now is : " + body);
+            // 拿到的Message已经是字符串之后的应答消息了
+            String body = (String) msg;
+            System.out.println("Now is : " + body + "; the counter is:" + ++counter);
         }
 
         @Override

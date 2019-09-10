@@ -86,7 +86,6 @@ class TimeServerHandler implements Runnable {
         this.socket = socket;
     }
 
-    @Override
     public void run() {
         try {
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
